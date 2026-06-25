@@ -60,11 +60,17 @@ freestyle vm create --name opencode-gentle
 freestyle vm exec <vm-id> "curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && apt-get install -y nodejs"
 freestyle vm exec <vm-id> "npm install -g opencode-ai"
 
+# Install gentle-ai
+freestyle vm exec <vm-id> "curl -sL https://github.com/Gentleman-Programming/gentle-ai/releases/download/v1.42.0/gentle-ai_1.42.0_linux_amd64.tar.gz | tar xz -C /tmp && mv /tmp/gentle-ai /usr/local/bin/gentle-ai && chmod +x /usr/local/bin/gentle-ai"
+
 # Install ttyd
 freestyle vm exec <vm-id> "curl -sL https://github.com/tsl0922/ttyd/releases/download/1.7.7/ttyd.x86_64 -o /usr/local/bin/ttyd && chmod +x /usr/local/bin/ttyd"
 
-# Start ttyd with opencode
-freestyle vm exec <vm-id> "nohup ttyd --port 7682 --credential user:pass -- bash -c 'exec opencode' > /dev/null 2>&1 &"
+# Create user and configure
+freestyle vm exec <vm-id> "useradd -m -s /bin/bash opencode && su - opencode -c 'export PATH=/home/opencode/.nvm/versions/node/v24.16.0/bin:\$PATH && npm install -g opencode-ai'"
+
+# Start ttyd
+freestyle vm exec <vm-id> "nohup ttyd --port 7682 --credential user:pass -- su - opencode -c 'export PATH=/home/opencode/.nvm/versions/node/v24.16.0/bin:\$PATH && exec bash --login' > /dev/null 2>&1 &"
 
 # Map domain
 freestyle domains map "your-domain.style.dev" --vm-id <vm-id> --vm-port 7682
@@ -104,8 +110,8 @@ curl -fsSL https://raw.githubusercontent.com/reflecterlabs/alpine-opencode-gentl
 
 | Script | Description |
 |--------|-------------|
-| `setup.sh` | Standalone installer for Ubuntu/Debian/Arch/Fedora |
-| `alpine-env.sh` | Persistent Alpine chroot with interactive shell |
+| setup.sh | Standalone installer for Ubuntu/Debian/Arch/Fedora |
+| alpine-env.sh | Persistent Alpine chroot with interactive shell |
 
 ## License
 
