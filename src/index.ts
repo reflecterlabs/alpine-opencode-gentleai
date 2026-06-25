@@ -104,12 +104,18 @@ export default {
       }
     }
 
-    // ── API: VM restart ────────────────────────────────────────────────
+    // ── API: VM restart (stop + start) ─────────────────────────────────
     if (url.pathname === "/api/vm/restart" && hasAuth && request.method === "POST") {
       try {
+        await freestyleRequest(
+          env.FREESTYLE_API_KEY,
+          `/vms/${env.VM_ID}/stop`,
+          "POST"
+        );
+        await new Promise(r => setTimeout(r, 2000));
         const data = await freestyleRequest(
           env.FREESTYLE_API_KEY,
-          `/vms/${env.VM_ID}/restart`,
+          `/vms/${env.VM_ID}/start`,
           "POST"
         );
         return Response.json(data);
