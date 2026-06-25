@@ -1,32 +1,43 @@
-# Alpine OpenCode + Gentle AI
+# OpenCode + Gentle AI
 
-Minimal Alpine Linux environment with [opencode](https://opencode.ai) and [gentle-ai](https://github.com/Gentleman-Programming/gentle-ai) pre-configured with free-tier models.
+Web-based terminal with [opencode](https://opencode.ai) and [gentle-ai](https://github.com/Gentleman-Programming/gentle-ai) pre-configured with free-tier models. Runs on Cloudflare Sandboxes.
 
-## Quick Start
+## Deploy
 
-### Local install (Ubuntu/Debian/Arch/Fedora)
+### One-click deploy
+
+[![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button.svg)](https://deploy.workers.cloudflare.com/?url=https://github.com/reflecterlabs/alpine-opencode-gentleai)
+
+After deploy, set your password:
+
+```bash
+wrangler secret put AUTH_PASSWORD
+```
+
+### Manual deploy
+
+```bash
+git clone https://github.com/reflecterlabs/alpine-opencode-gentleai.git
+cd alpine-opencode-gentleai
+npm install
+wrangler secret put AUTH_PASSWORD   # set a password
+wrangler deploy
+```
+
+## Local install (no Cloudflare)
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/reflecterlabs/alpine-opencode-gentleai/main/setup.sh | bash
 ```
 
-### Alpine chroot (any host with sudo)
-
-```bash
-git clone https://github.com/reflecterlabs/alpine-opencode-gentleai.git
-cd alpine-opencode-gentleai
-chmod +x alpine-env.sh
-./alpine-env.sh
-```
-
 ## What's Included
 
-| Tool | Version | Purpose |
-|------|---------|---------|
-| opencode | 1.17.10 | AI coding agent |
-| gentle-ai | 1.42.0 | SDD orchestrator + skills |
-| engram | latest | Persistent memory |
-| gga | latest | Git guardian angel |
+| Tool | Purpose |
+|------|---------|
+| opencode | AI coding agent |
+| gentle-ai | SDD orchestrator + skills |
+| engram | Persistent memory |
+| gga | Git guardian angel |
 
 ## SDD Phase Models (free tier)
 
@@ -43,25 +54,26 @@ chmod +x alpine-env.sh
 | Verify | MiMo V2.5 |
 | Archive | DeepSeek V4 Flash |
 
-## Compatibility
+## Architecture
 
-- **Direct install**: Ubuntu, Debian, Arch, Fedora, RHEL
-- **Alpine chroot**: Any Linux with `sudo` and `curl`
+```
+Browser → xterm.js → WebSocket → Cloudflare Worker → Sandbox Container
+                                                          ├── opencode
+                                                          ├── gentle-ai
+                                                          └── bash (persistent)
+```
+
+- **Sandbox**: Debian container with opencode + gentle-ai installed on first boot
+- **Terminal**: xterm.js over WebSocket, real PTY
+- **Auth**: Password-protected (set via `AUTH_PASSWORD` secret)
+- **State**: Persistent across requests (same sandbox ID)
 
 ## Scripts
 
 | Script | Description |
 |--------|-------------|
-| `setup.sh` | Standalone installer for supported distros |
+| `setup.sh` | Standalone installer for Ubuntu/Debian/Arch/Fedora |
 | `alpine-env.sh` | Persistent Alpine chroot with interactive shell |
-
-### alpine-env.sh
-
-```bash
-./alpine-env.sh            # setup + enter shell
-./alpine-env.sh --setup    # setup only
-./alpine-env.sh --destroy  # remove environment
-```
 
 ## License
 
