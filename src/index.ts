@@ -33,9 +33,11 @@ export default {
       });
     }
 
-    // ── serve frontend ───────────────────────────────────────────────
-    return new Response(htmlPage(env.TERMINAL_URL), {
-      headers: { "Content-Type": "text/html" },
+    // ── redirect to terminal ─────────────────────────────────────────
+    const terminalUrl = env.TERMINAL_URL || "https://opencode-gentle.style.dev/";
+    return new Response(null, {
+      status: 302,
+      headers: { Location: terminalUrl },
     });
   },
 };
@@ -58,21 +60,4 @@ function loginPage(): string {
   <input type="password" name="password" placeholder="Password" autofocus>
   <button type="submit">Enter</button>
 </form></body></html>`;
-}
-
-function htmlPage(terminalUrl: string): string {
-  return `<!DOCTYPE html>
-<html><head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>OpenCode + Gentle AI</title>
-<style>
-  *{margin:0;padding:0;box-sizing:border-box}
-  body{background:#1a1b26;color:#c0caf5;height:100vh;display:flex;flex-direction:column;font-family:system-ui}
-  #bar{padding:8px 16px;background:#16161e;border-bottom:1px solid #292e42;display:flex;align-items:center;gap:12px;font-size:13px}
-  #bar .logo{font-weight:600}
-  iframe{flex:1;border:none;width:100%}
-</style></head><body>
-<div id="bar"><span class="logo">OpenCode + Gentle AI</span></div>
-<iframe src="${terminalUrl}"></iframe>
-</body></html>`;
 }
