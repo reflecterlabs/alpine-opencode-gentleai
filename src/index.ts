@@ -13,13 +13,14 @@ async function freestyleRequest(
   method: string = "GET",
   body?: object
 ): Promise<any> {
+  const isPost = method === "POST" || method === "PUT" || method === "PATCH";
   const res = await fetch(`${FREESTYLE_API}${path}`, {
     method,
     headers: {
       Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
+      ...(isPost ? { "Content-Type": "application/json" } : {}),
     },
-    body: body ? JSON.stringify(body) : undefined,
+    body: isPost ? JSON.stringify(body || {}) : undefined,
   });
   if (!res.ok) {
     const text = await res.text();
