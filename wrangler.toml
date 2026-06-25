@@ -3,6 +3,6 @@ main = "src/index.ts"
 compatibility_date = "2025-06-25"
 compatibility_flags = ["nodejs_compat"]
 
-[[sandbox]]
-binding = "Sandbox"
-image = "debian:bookworm-slim"
+[[migrations]]
+tag = "v2"
+deleted_classes = ["Sandbox"]
