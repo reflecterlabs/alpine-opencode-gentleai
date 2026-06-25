@@ -1,6 +1,22 @@
 # OpenCode + Gentle AI
 
-Web-based terminal with [opencode](https://opencode.ai) and [gentle-ai](https://github.com/Gentleman-Programming/gentle-ai) pre-configured with free-tier models. Runs on Cloudflare Sandboxes.
+Web-based terminal with [opencode](https://opencode.ai) and [gentle-ai](https://github.com/Gentleman-Programming/gentle-ai) pre-configured with free-tier models. Runs on Cloudflare Workers + Freestyle.sh VMs.
+
+## Live Demo
+
+- **Login**: https://opencode-gentle-ai.reflecterlabs-9a3.workers.dev/
+- **Terminal**: https://opencode-gentle.style.dev/
+
+## Architecture
+
+```
+Browser → Cloudflare Worker (auth) → Freestyle VM (ttyd + opencode)
+```
+
+- **Worker**: Handles login, redirects to terminal
+- **Freestyle VM**: Debian VM running ttyd (web terminal) with opencode
+- **Domain**: Freestyle preview domain (*.style.dev) — free, no DNS setup needed
+- **Auth**: Password-protected (set via `AUTH_PASSWORD` secret)
 
 ## Deploy
 
@@ -8,10 +24,12 @@ Web-based terminal with [opencode](https://opencode.ai) and [gentle-ai](https://
 
 [![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button.svg)](https://deploy.workers.cloudflare.com/?url=https://github.com/reflecterlabs/alpine-opencode-gentleai)
 
-After deploy, set your password:
+After deploy, set your password and Freestyle API key:
 
 ```bash
 wrangler secret put AUTH_PASSWORD
+wrangler secret put FREESTYLE_API_KEY
+wrangler secret put TERMINAL_URL  # e.g., https://your-vm.style.dev/
 ```
 
 ### Manual deploy
@@ -20,8 +38,36 @@ wrangler secret put AUTH_PASSWORD
 git clone https://github.com/reflecterlabs/alpine-opencode-gentleai.git
 cd alpine-opencode-gentleai
 npm install
-wrangler secret put AUTH_PASSWORD   # set a password
+wrangler secret put AUTH_PASSWORD
+wrangler secret put FREESTYLE_API_KEY
+wrangler secret put TERMINAL_URL
 wrangler deploy
+```
+
+### Set up Freestyle VM
+
+```bash
+# Install Freestyle CLI
+npm install -g freestyle
+
+# Set API key
+export FREESTYLE_API_KEY="your-key"
+
+# Create VM
+freestyle vm create --name opencode-gentle
+
+# Install dependencies
+freestyle vm exec <vm-id> "curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && apt-get install -y nodejs"
+freestyle vm exec <vm-id> "npm install -g opencode-ai"
+
+# Install ttyd
+freestyle vm exec <vm-id> "curl -sL https://github.com/tsl0922/ttyd/releases/download/1.7.7/ttyd.x86_64 -o /usr/local/bin/ttyd && chmod +x /usr/local/bin/ttyd"
+
+# Start ttyd with opencode
+freestyle vm exec <vm-id> "nohup ttyd --port 7682 --credential user:pass -- bash -c 'exec opencode' > /dev/null 2>&1 &"
+
+# Map domain
+freestyle domains map "your-domain.style.dev" --vm-id <vm-id> --vm-port 7682
 ```
 
 ## Local install (no Cloudflare)
@@ -53,20 +99,6 @@ curl -fsSL https://raw.githubusercontent.com/reflecterlabs/alpine-opencode-gentl
 | Apply | North Mini Code |
 | Verify | MiMo V2.5 |
 | Archive | DeepSeek V4 Flash |
-
-## Architecture
-
-```
-Browser → xterm.js → WebSocket → Cloudflare Worker → Sandbox Container
-                                                          ├── opencode
-                                                          ├── gentle-ai
-                                                          └── bash (persistent)
-```
-
-- **Sandbox**: Debian container with opencode + gentle-ai installed on first boot
-- **Terminal**: xterm.js over WebSocket, real PTY
-- **Auth**: Password-protected (set via `AUTH_PASSWORD` secret)
-- **State**: Persistent across requests (same sandbox ID)
 
 ## Scripts
 
