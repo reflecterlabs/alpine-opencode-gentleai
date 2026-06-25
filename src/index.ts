@@ -33,14 +33,27 @@ export default {
       });
     }
 
-    // ── redirect to terminal ─────────────────────────────────────────
+    // ── serve terminal as iframe ─────────────────────────────────────
     const terminalUrl = env.TERMINAL_URL || "https://opencode-gentle.style.dev/";
-    return new Response(null, {
-      status: 302,
-      headers: { Location: terminalUrl },
+    return new Response(terminalPage(terminalUrl), {
+      headers: { "Content-Type": "text/html" },
     });
   },
 };
+
+function terminalPage(terminalUrl: string): string {
+  return `<!DOCTYPE html>
+<html><head>
+<title>OpenCode + Gentle AI</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#1a1b26; height:100vh; overflow:hidden; font-family:system-ui; }
+  iframe { width:100%; height:100%; border:none; }
+</style>
+</head><body>
+<iframe src="${terminalUrl}" allow="clipboard-read; clipboard-write"></iframe>
+</body></html>`;
+}
 
 function loginPage(): string {
   return `<!DOCTYPE html>
