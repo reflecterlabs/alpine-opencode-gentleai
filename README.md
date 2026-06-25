@@ -44,7 +44,20 @@ wrangler secret put TERMINAL_URL
 wrangler deploy
 ```
 
-### Set up Freestyle VM
+### Set up Freestyle VM (automated)
+
+```bash
+# Install Freestyle CLI
+npm install -g freestyle
+
+# Set API key
+export FREESTYLE_API_KEY="your-key"
+
+# Run setup script
+./setup-vm.sh --all
+```
+
+### Set up Freestyle VM (manual)
 
 ```bash
 # Install Freestyle CLI
