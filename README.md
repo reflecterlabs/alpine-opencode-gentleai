@@ -4,8 +4,7 @@ Web-based terminal with [opencode](https://opencode.ai) and [gentle-ai](https://
 
 ## Live Demo
 
-- **Login**: https://opencode-gentle-ai.reflecterlabs-9a3.workers.dev/
-- **Terminal**: https://opencode-gentle.style.dev/
+> Demo no disponible por el momento.
 
 ## Architecture
 
