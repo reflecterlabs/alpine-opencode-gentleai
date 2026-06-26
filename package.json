@@ -11,5 +11,24 @@
     "@cloudflare/workers-types": "^4.20250620.0",
     "typescript": "^5.7.0",
     "wrangler": "^4.104.0"
+  },
+  "cloudflare": {
+    "bindings": {
+      "AUTH_PASSWORD": {
+        "description": "Password for terminal access"
+      },
+      "FREESTYLE_API_KEY": {
+        "description": "API key from Freestyle.sh dashboard"
+      },
+      "TERMINAL_URL": {
+        "description": "URL of your Freestyle VM terminal"
+      },
+      "VM_ID": {
+        "description": "Freestyle VM ID"
+      },
+      "FRONTEND_URL": {
+        "description": "Optional frontend URL"
+      }
+    }
   }
 }

@@ -3,6 +3,11 @@ main = "src/index.ts"
 compatibility_date = "2025-06-25"
 compatibility_flags = ["nodejs_compat"]
 
+[vars]
+TERMINAL_URL = ""  # Set via wrangler secret put TERMINAL_URL
+VM_ID = ""        # Set via wrangler secret put VM_ID
+FRONTEND_URL = "" # Optional, defaults to https://workstation-center.pages.dev/
+
 [[migrations]]
 tag = "v2"
 deleted_classes = ["Sandbox"]
