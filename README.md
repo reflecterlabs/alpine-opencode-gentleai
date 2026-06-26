@@ -23,7 +23,15 @@ Browser → Cloudflare Worker (auth) → Freestyle VM (ttyd + opencode)
 
 [![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button.svg)](https://deploy.workers.cloudflare.com/?url=https://github.com/reflecterlabs/alpine-opencode-gentleai)
 
-After deploy, set your password and Freestyle API key:
+After clicking deploy, configure these variables:
+
+| Variable | Description | How to get it |
+|----------|-------------|---------------|
+| AUTH_PASSWORD | Password for terminal access | Create your own secure password |
+| FREESTYLE_API_KEY | API key for Freestyle.sh | Get from dashboard.freestyle.sh/settings |
+| TERMINAL_URL | URL of your terminal | Create VM first, then use its URL |
+| VM_ID | Freestyle VM identifier | Create with freestyle vm create --name opencode-gentle |
+| FRONTEND_URL | Frontend URL (optional) | Defaults to workstation-center.pages.dev |
 
 ```bash
 wrangler secret put AUTH_PASSWORD
